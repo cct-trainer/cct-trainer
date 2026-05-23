@@ -2,56 +2,31 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CCT">
-    <meta name="theme-color" content="#111118">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Christian Cattaneo Trainer</title>
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23111118'/></svg>">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCT Trainer - Test</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
-        :root {
-            /* Paleta Cattaneo: Negro + Dorado */
-            --bg: #151410; --bg2: #ffffff; --bg3: #f0ede6; --bg4: #e8e3d8;
-            --gold: #c9a84c; --gold2: #e2b96a; --gold3: #f0d080; --golddark: #a07830;
-            --white: #1a1208; --gray: #6b6050; --gray2: #4a3f30;
-            --border: rgba(180,140,60,0.18); --border2: rgba(180,140,60,0.35);
-            --blue: #c9a84c; --blue2: #e2b96a; --blue3: #a07830;
-            --run: #2d7a3a; --run2: #3a9e4a; --run3: #1e5c2a;
-            --run-bg: rgba(45,122,58,0.06); --run-border: rgba(45,122,58,0.25);
-            --sidebar-bg: #0f0d08; --sidebar-text: #c9a84c; --sidebar-border: rgba(201,168,76,0.15);
+        body {
+            background-color: #0f0d08;
+            color: #c9a84c;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        /* LOGIN SCREEN */
-        .login-screen{position:fixed;inset:0;background:#0f0d08;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:0;}
-        .login-screen.hidden{display:none;}
-        .login-box{background:rgba(26,21,8,0.95);border:1px solid rgba(201,168,76,0.2);border-radius:14px;padding:1.75rem;width:420px;max-width:94vw;box-shadow:0 4px 40px rgba(0,0,0,0.85);}
-        .login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:#a07830;text-align:center;margin-bottom:4px;}
-        .login-logo span{color:#1a1208;}
-        .login-sub{font-size:12px;color:#7a6540;text-align:center;margin-bottom:2rem;}
-        .stu-card-sessions{font-size:10px;color:#a07830;font-weight:600;}
-        .students-empty{color:var(--gray);font-size:13px;padding:1rem 0;}
-        /* FICHA SECTION */
-        .ficha-section{background:transparent;padding:0;}
+        .box {
+            text-align: center;
+            border: 1px solid #c9a84c;
+            padding: 2rem;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
-
-    <div class="alumno-view" id="alumno-view">
-        <div class="alumno-header">
-            <div class="alumno-logo-txt">CCT <span>Trainer</span></div>
-            <div class="alumno-bienvenida-txt" id="alumno-bienvenida"></div>
-            <button class="btn-logout" onclick="doLogout()">Salir</button>
-        </div>
-        <div class="alumno-content" id="alumno-content">
-            <div style="text-align:center;padding:3rem;color:var(--gray);">Cargando...</div>
-        </div>
+    <div class="box">
+        <h1>CCT Trainer</h1>
+        <p>El servidor de GitHub Pages está funcionando correctamente.</p>
     </div>
-
-    <script>
-        ; const blob=new Blob([html],{type:'text/html;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(s.nombre||'alumno').replace(/\s+/g,'_')+'_CCT.html'; a.click(); URL.revokeObjectURL(a.href); showToast('✅ Página de '+s.nombre+' generada. Envíasela por WhatsApp.'); } function exportHTML(){ const alumnoId=document.getElementById('sel-alumno').value;const titulo=document.getElementById('inp-titulo').value||'Sesión'; const tmp={id:'tmp',alumnoId,titulo,fecha:document.getElementById('inp-fecha').value,descarga:document.getElementById('inp-descarga').value,modo:sessionMode}; if(sessionMode==='fuerza')tmp.blocks=JSON.parse(JSON.stringify(blocks));else tmp.runBlocks=JSON.parse(JSON.stringify(runBlocks)); dlHTML(buildHTML(tmp),titulo+'.html'); } function expHTMLCurrent(){if(currentSesion)exportHTMLsesion(currentSesion.id);} // // EXPORT EXCEL // function buildXLSX(se){ const stu=getStu(se.alumnoId);const isRun=se.modo==='running'; const rows=[['CHRISTIAN CATTANEO TRAINER','','','','','',''],['Sesión:',se.titulo||'—','Alumno:',stu?.nombre||'—'],['Fecha:',se.fecha||'—','Tipo:',isRun?'Running':'Fuerza',[],[]]; if(isRun){ (se.runBlocks||[]).forEach((b,bi)=>{ rows.push(['BLOQUE '+(bi+1)+': '+(b.tipo||'').toUpperCase()+(b.subtipo?' '+b.subtipo.toUpperCase():''),'','','','','','']); if(b.tipo==='fondo'){ rows.push(['Distancia','Distancia','Tiempo','Tiempo','Zona','Zona','Pace','Pace','Seg/100m','Micropausa','Macropausa']); } else if(b.tipo==='intervalos'){ rows.push(['Pasadas','Reps','Reps','Pausa (seg)','Distancia','Pace','Seg/100m','Micropausa','Macropausa']); } else if(b.tipo==='tempo'){ rows.push(['Duración','Distancia','Ritmo umbral']); } }); } else { (se.blocks||[]).forEach((b,bi)=>{ const lettered=usaLetras(b.tipo); rows.push(['BLOQUE '+(bi+1)+': '+b.type+(b.name?' — '+b.name:'')]); b.exercises.forEach((ex,ei)=>{ const prefix=lettered?LETTERS[ei]+'. ':''; rows.push([prefix+(ex.name||'Ejercicio'),'','','','']); rows.push(['Serie','Reps','Peso (kg)','RIR','Pausa (seg)','Nota']); ex.series.forEach((s,si)=>{ rows.push([(lettered?LETTERS[ei]:'')+(si+1),s.reps||'',s.peso||'',s.rir||'',s.pausa||'',s.note||'']); }); rows.push([]); }); }); } rows.push(['DESCARGA / VUELTA LA CALMA']); rows.push([se.descarga]); } const ws=XLSX.utils.aoa_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Sesión'); XLSX.writeFile(wb,(se.titulo||'sesion')+'.xlsx'); } function exportExcelSesion(id){const se=sessions.find(s=>s.id===id);if(se)buildXLSX(se);} function exportarExcel(){ const titulo=document.getElementById('inp-titulo').value||'Sesión'; const tmp={id:'tmp',alumnoId:document.getElementById('sel-alumno').value,titulo,fecha:document.getElementById('inp-fecha').value,descarga:document.getElementById('inp-descarga').value,modo:sessionMode}; if(sessionMode==='fuerza')tmp.blocks=JSON.parse(JSON.stringify(blocks));else tmp.runBlocks=JSON.parse(JSON.stringify(runBlocks)); buildXLSX(tmp); } function expExcelCurrent(){if(currentSesion)buildXLSX(currentSesion);} // // CALENDARIO // function changeMonth(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();} function refreshCalFilter(){const sel=document.getElementById('cal-filter');const cur=sel.value;sel.innerHTML='<option value="">Todos los alumnos</option>'+students.map(s=>`<option value="${s.id}">${s.nombre}</option>`).join('');sel.value=cur;} function renderCalendar(){ document.getElementById('cal-label').textContent=MESES[calMonth]+' '+calYear; const filtro=document.getElementById('cal-filter')?.value||''; const filtered=sessions.filter(s=>s.alumnoId===filtro); const today=new Date();today.setHours(0,0,0,0); const first=new Date(calYear,calMonth,1); const startDay=first.getDay(); const totalDays=new Date(calYear,calMonth+1,0).getDate(); const prevDays=new Date(calYear,calMonth,0).getDate(); let html=DIAS.map(d=>`<div class="cal-day-header">${d}</div>`).join(''); for(let i=0; i<startDay; i++){ html+=`<div class="cal-day empty">${prevDays-startDay+i+1}</div>`; } for(let d=1; d<=totalDays; d++){ const ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'); const dt=new Date(calYear,calMonth,d); const isToday=dt.getTime()===today.getTime(); const evs=filtered.filter(s=>s.fecha===ds); html+=`<div class="cal-day ${isToday?'today':''}">${d}</div>`; } document.getElementById('cal-grid').innerHTML=html; }
-    </script>
 </body>
 </html>
