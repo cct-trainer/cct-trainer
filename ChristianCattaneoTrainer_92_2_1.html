@@ -3,15 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christian Cattaneo Trainer</title>
+    <title>Christian Cattaneo Training</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .bg-premium-dark { bg-color: #121212; }
-        .bg-premium-card { bg-color: #1a1a1a; }
-        .text-premium-gold { color: #d4af37; }
-        .border-premium-gold { border-color: #d4af37; }
-    </style>
 </head>
 <body class="bg-zinc-950 text-gray-100 font-sans min-h-screen flex flex-col">
 
@@ -31,12 +25,9 @@
                 <button onclick="mostrarDashboard()" class="px-4 py-2 rounded bg-amber-500 text-zinc-950 font-bold text-sm uppercase transition hover:bg-amber-400">Alumnos</button>
                 <button class="px-4 py-2 rounded bg-zinc-800 text-gray-300 font-semibold text-sm uppercase transition hover:bg-zinc-700">Nueva Sesión</button>
                 <button class="px-4 py-2 rounded bg-zinc-800 text-gray-300 font-semibold text-sm uppercase transition hover:bg-zinc-700">Calendario</button>
-                <button class="px-4 py-2 rounded bg-zinc-800 text-gray-300 font-semibold text-sm uppercase transition hover:bg-zinc-700">Novedades</button>
             </nav>
 
             <div class="flex gap-2 text-xs">
-                <button class="px-3 py-1.5 rounded bg-emerald-600 text-white font-medium flex items-center gap-1"><i class="fa-solid fa-cloud"></i> Sync</button>
-                <button class="px-3 py-1.5 rounded bg-zinc-800 text-gray-400 font-medium flex items-center gap-1"><i class="fa-solid fa-download"></i> Backup</button>
                 <button class="px-3 py-1.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-medium flex items-center gap-1"><i class="fa-solid fa-link"></i> Conectar Drive</button>
             </div>
         </div>
@@ -55,8 +46,7 @@
             <div id="grid-alumnos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 </div>
         </section>
-
-        <section id="vista-alumno" class="hidden space-y-6">
+<section id="vista-alumno" class="hidden space-y-6">
             
             <button onclick="mostrarDashboard()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-gray-200 text-xs font-bold uppercase rounded flex items-center gap-2 transition w-fit">
                 <i class="fa-solid fa-arrow-left"></i> Volver a Alumnos
@@ -67,7 +57,7 @@
                     
                     <div class="relative group w-32 h-32 md:w-36 md:h-36 shrink-0 bg-zinc-800 border-2 border-dashed border-zinc-700 rounded-xl flex flex-col items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500 transition">
                         <div id="foto-alumno-contenedor" class="absolute inset-0 flex items-center justify-center bg-zinc-800">
-                            <i class="fa-solid fa-user-tie text-4xl text-zinc-600 group-hover:text-amber-500 transition"></i>
+                            <i class="fa-solid fa-user text-4xl text-zinc-600 group-hover:text-amber-500 transition"></i>
                         </div>
                         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-center p-2 transition text-xs text-amber-500 font-bold">
                             <i class="fa-solid fa-camera text-base mb-1"></i>
@@ -106,7 +96,7 @@
                         <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500 mb-3 group-hover:bg-amber-500 group-hover:text-zinc-950 transition">
                             <i class="fa-solid fa-dumbbell text-lg"></i>
                         </div>
-                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Fuerza</h4>
+                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Entrenamiento de Fuerza</h4>
                         <p class="text-xs text-zinc-500 mt-1">Sesiones y rutinas</p>
                     </button>
 
@@ -114,7 +104,7 @@
                         <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500 mb-3 group-hover:bg-amber-500 group-hover:text-zinc-950 transition">
                             <i class="fa-solid fa-person-running text-lg"></i>
                         </div>
-                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Running</h4>
+                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Entrenamiento de Running</h4>
                         <p class="text-xs text-zinc-500 mt-1">Sesiones y planificación</p>
                     </button>
 
@@ -122,7 +112,7 @@
                         <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500 mb-3 group-hover:bg-amber-500 group-hover:text-zinc-950 transition">
                             <i class="fa-solid fa-apple-whole text-lg"></i>
                         </div>
-                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Nutrición</h4>
+                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Información Nutricional</h4>
                         <p class="text-xs text-zinc-500 mt-1">Macronutrientes y objetivos</p>
                     </button>
 
@@ -130,8 +120,8 @@
                         <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500 mb-3 group-hover:bg-amber-500 group-hover:text-zinc-950 transition">
                             <i class="fa-solid fa-chart-line text-lg"></i>
                         </div>
-                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Objetivos</h4>
-                        <p class="text-xs text-zinc-500 mt-1">Antropometría y devolución</p>
+                        <h4 class="font-bold text-gray-200 uppercase text-sm tracking-wide">Información de Objetivos</h4>
+                        <p class="text-xs text-zinc-500 mt-1">Antropometría, composición y devolución</p>
                     </button>
 
                     <button onclick="abrirModulo('archivos')" class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-amber-500/60 text-left transition shadow-md group sm:col-span-2 lg:col-span-1">
@@ -150,143 +140,3 @@
             </div>
         </section>
     </main>
-<footer class="bg-zinc-950 border-t border-zinc-900 p-4 text-center text-xs text-zinc-600 mt-12">
-        &copy; 2026 Christian Cattaneo Training &bull; Biomecánica & Rendimiento.
-    </footer>
-
-    <script>
-        // BASE DE DATOS DE ALUMNOS (INTACTA Y ASEGURADA)
-        const alumnosBD = [
-            { id: "LM", nombre: "LUCIA MARCONI", objetivo: "Salud general", edad: 28, lesiones: "NO TIENE", foto: "" },
-            { id: "AD", nombre: "ALfonso DE LUCIA", objetivo: "Sin objetivo", edad: 34, lesiones: "Molestia en rodilla derecha", foto: "" },
-            { id: "CC", nombre: "CHRISTIAN CATTANEO", objetivo: "Ganancia muscular", edad: 53, lesiones: "NO TIENE", foto: "" },
-            { id: "CG", nombre: "CARROL GAWIANSKI", objetivo: "Ganancia muscular", edad: 31, lesiones: "NO TIENE", foto: "" },
-            { id: "LP", nombre: "LILI PAIRETI", objetivo: "Sin objetivo", edad: 42, lesiones: "NO TIENE", foto: "" },
-            { id: "EG", nombre: "EUGENIO GANDINI", objetivo: "Rendimiento deportivo", edad: 26, lesiones: "Esguince de tobillo crónico", foto: "" },
-            { id: "JC", nombre: "JAVIER CASINI", objetivo: "Tonificación", edad: 40, lesiones: "NO TIENE", foto: "" },
-            { id: "HM", nombre: "HORACIO MORENO", objetivo: "Sin objetivo", edad: 45, lesiones: "NO TIENE", foto: "" },
-            { id: "CR", nombre: "CAROLINA R", objetivo: "Rendimiento deportivo", edad: 35, lesiones: "NO TIENE", foto: "" },
-            { id: "CB", nombre: "CANDELA BUSAMIA", objetivo: "Ganancia muscular", edad: 24, lesiones: "NO TIENE", foto: "" },
-            { id: "LC", nombre: "LORENA CATALINA", objetivo: "Rendimiento deportivo", edad: 38, lesiones: "Tendinitis aquílea leve", foto: "" },
-            { id: "DG", nombre: "DENIS GAWIASKI", objetivo: "Ganancia muscular", edad: 29, lesiones: "NO TIENE", foto: "" },
-            { id: "MS", nombre: "MARTINA SERRA", objetivo: "Rendimiento deportivo", edad: 22, lesiones: "NO TIENE", foto: "" }
-        ];
-
-        let alumnoSeleccionado = null;
-
-        // FUNCIÓN PARA GENERAR EL FIXTURE / GRID DE ALUMNOS
-        function renderizarDashboard() {
-            const grid = document.getElementById('grid-alumnos');
-            grid.innerHTML = '';
-
-            alumnosBD.forEach(alumno => {
-                const card = document.createElement('div');
-                card.className = "bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col items-center text-center cursor-pointer hover:border-amber-500 transition shadow-lg group transform hover:-translate-y-1 duration-200";
-                card.onclick = () => seleccionarAlumno(alumno.id);
-
-                // Placeholder o inicial si no hay foto
-                const Iniciales = alumno.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-
-                card.innerHTML = `
-                    <div class="w-20 h-20 bg-zinc-800 rounded-full border-2 border-zinc-700 flex items-center justify-center text-zinc-400 text-xl font-bold uppercase mb-3 group-hover:border-amber-500 group-hover:text-amber-500 transition overflow-hidden">
-                        ${alumno.foto ? `<img src="${alumno.foto}" class="w-full h-full object-cover">` : Iniciales}
-                    </div>
-                    <h4 class="font-bold text-sm text-gray-200 uppercase tracking-tight group-hover:text-white">${alumno.nombre}</h4>
-                    <p class="text-xs text-amber-500/80 font-medium mt-1 uppercase tracking-wider">${alumno.objetivo}</p>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // CONTROL DE NAVEGACIÓN
-        function mostrarDashboard() {
-            document.getElementById('vista-dashboard').classList.remove('hidden');
-            document.getElementById('vista-alumno').classList.add('hidden');
-            alumnoSeleccionado = null;
-        }
-
-        function seleccionarAlumno(id) {
-            const alumno = alumnosBD.find(a => a.id === id);
-            if (!alumno) return;
-
-            alumnoSeleccionado = alumno;
-
-            // Cargar datos en los dos renglones estrictos superiores
-            document.getElementById('calc-nombre').innerText = alumno.nombre;
-            document.getElementById('calc-id').innerText = `ID: ${alumno.id}`;
-            document.getElementById('calc-edad').innerText = `${alumno.edad} años`;
-            document.getElementById('calc-lesiones').innerText = alumno.lesiones;
-            document.getElementById('calc-objetivo').innerText = alumno.objetivo;
-
-            // Reset del contenedor de foto de ficha
-            const inicialesFicha = alumno.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            document.getElementById('foto-alumno-contenedor').innerHTML = alumno.foto 
-                ? `<img src="${alumno.foto}" class="w-full h-full object-cover">` 
-                : `<span class="text-3xl font-bold text-zinc-500">${inicialesFicha}</span>`;
-
-            // Reset visual del espacio operativo
-            document.getElementById('workspace-modulo').innerHTML = `
-                <div class="text-center">
-                    <i class="fa-solid fa-arrow-pointer text-2xl text-zinc-700 mb-2 block"></i>
-                    Ficha de <span class="text-amber-500 font-bold">${alumno.nombre}</span> activa.<br>Seleccioná una herramienta para operar en base a sus objetivos.
-                </div>
-            `;
-
-            // Cambiar de vista
-            document.getElementById('vista-dashboard').classList.add('hidden');
-            document.getElementById('vista-alumno').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // LÓGICA DE CONTROL DEL ESCRITORIO DE TRABAJO (5 BOTONES)
-        function abrirModulo(tipo) {
-            const workspace = document.getElementById('workspace-modulo');
-            const nombreA = alumnoSeleccionado ? alumnoSeleccionado.nombre : "Alumno";
-            
-            let titulo = "";
-            let detalle = "";
-
-            switch(tipo) {
-                case 'fuerza':
-                    titulo = "Módulo de Fuerza y Rutinas";
-                    detalle = `Planificación de sobrecarga progresiva y control de RPE para ${nombreA}.`;
-                    break;
-                case 'running':
-                    titulo = "Módulo de Running y Planificación";
-                    detalle = `Zonas de entrenamiento, microciclos y volumen de carrera para ${nombreA}.`;
-                    break;
-                case 'nutricion':
-                    titulo = "Información Nutricional";
-                    detalle = `Cálculo de tasas metabólicas, balance de macronutrientes y déficit/superávit energético.`;
-                    break;
-                case 'objetivos-info':
-                    titulo = "Información de Objetivos e Historial";
-                    detalle = `Registro de Antropometría completa, evolución del % de grasa, análisis estético y devoluciones técnicas.`;
-                    break;
-                case 'archivos':
-                    titulo = "Documentos Adjuntos";
-                    detalle = `Espacio para cargar estudios médicos, plantillas externas o PDFs de rendimiento.`;
-                    break;
-            }
-
-            workspace.innerHTML = `
-                <div class="w-full space-y-3 p-2 text-left">
-                    <div class="flex items-center gap-2 border-b border-zinc-800 pb-2">
-                        <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-                        <h4 class="font-bold text-base text-amber-500 uppercase tracking-wide">${titulo}</h4>
-                    </div>
-                    <p class="text-sm text-gray-300 font-medium">${detalle}</p>
-                    <div class="bg-zinc-950/50 border border-zinc-800/40 rounded-lg p-8 text-center text-xs text-zinc-600 italic">
-                        Área de trabajo activa. Aquí se renderizan las tablas y gráficas vinculadas a la base de datos.
-                    </div>
-                </div>
-            `;
-        }
-
-        // INICIALIZACIÓN DE LA APLICACIÓN
-        window.onload = function() {
-            renderizarDashboard();
-        };
-    </script>
-</body>
-</html>
