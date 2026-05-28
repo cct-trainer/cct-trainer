@@ -1314,7 +1314,7 @@ function switchTab(paneId,btn){
 function renderSidebar(){
   const el=document.getElementById('students-list');
   const validStudents=students.filter(s=>s&&s.nombre&&s.id);
-  if(!validStudents.length){el.innerHTML='<div style="padding:1.25rem;font-size:12px;color:#9ca3af;text-align:center;">Sin alumnos aún</div>';return;}
+  if(!validStudents.length){if(el)el.innerHTML='<div style="padding:1.25rem;font-size:12px;color:#9ca3af;text-align:center;">Sin alumnos aún</div>';renderGallery();renderEscritorioGrid();return;}
   el.innerHTML=validStudents.map(s=>
     '<div class="student-item '+(selectedId===s.id?'selected':'')+'" onclick="selectStudent(\''+s.id+'\')"><div class="stu-avatar">'+(s.photo?'<img src="'+s.photo+'" alt="">':initials(s.nombre||'?'))+'</div><div style="min-width:0;"><div class="stu-name">'+escH(s.nombre)+'</div><div class="stu-obj">'+escH(s.objetivo||'Sin objetivo')+'</div></div></div>'
   ).join('');
@@ -2809,8 +2809,8 @@ function calcTotalDistTCX(se){
 renderSidebar();
 renderGallery();
 document.getElementById('inp-fecha').value=new Date().toISOString().substr(0,10);
+renderEscritorioGrid();
 renderBlocks();
-
 // Autosave de borrador al escribir en cualquier input del editor de sesión
 (function(){
   const panel=document.getElementById('panel-sesion');
