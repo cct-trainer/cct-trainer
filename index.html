@@ -313,7 +313,45 @@ function _suplShowPanelHook(n,btn){
   }
 }
 
-// DOMContentLoaded — auto-login + close overlays + hook showPanel
+// ══ NAVEGACIÓN HOME / PANEL / MIEMBROS ════════════════
+function showHome(){
+  document.body.classList.add('home-mode');
+  document.getElementById('home-view').classList.add('active');
+  document.getElementById('home-view').style.display='flex';
+  document.getElementById('miembros-view').classList.remove('active');
+  document.getElementById('miembros-view').style.display='none';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-view').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showMiembros(){
+  document.body.classList.add('home-mode');
+  document.getElementById('home-view').classList.remove('active');
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('miembros-view').classList.add('active');
+  document.getElementById('miembros-view').style.display='flex';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-view').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showPanel2(){
+  document.body.classList.remove('home-mode');
+  document.getElementById('home-view').classList.remove('active');
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('miembros-view').classList.remove('active');
+  document.getElementById('miembros-view').style.display='none';
+  document.getElementById('login-screen').style.display='none';
+  entrarComoEntrenador();
+}
+
+function scrollToSection(id){
+  const el=document.getElementById(id);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+
+// DOMContentLoaded — mostrar Home por defecto
 document.addEventListener('DOMContentLoaded',function(){
   const m=document.getElementById('modal-supl');
   if(m) m.addEventListener('click',function(e){if(e.target===this)cerrarModalSupl();});
@@ -328,12 +366,117 @@ document.addEventListener('DOMContentLoaded',function(){
       _suplShowPanelHook(n,btn);
     };
   }
-  entrarComoEntrenador();
+  // Mostrar Home pública al cargar
+  showHome();
+  initHomeContenido();
 });
 
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ══ HOME PÚBLICA ══════════════════════════════════════ */
+#home-view{display:none;flex-direction:column;min-height:100vh;background:#f5f4f0;font-family:'Inter',sans-serif;}
+#home-view.active{display:flex;}
+
+/* Navbar */
+.hn-bar{position:sticky;top:0;z-index:100;background:#111118;border-bottom:1px solid rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:58px;}
+.hn-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:5px;color:#c9a84c;cursor:pointer;}
+.hn-logo span{font-size:11px;letter-spacing:4px;color:#7a6540;display:block;margin-top:-4px;}
+.hn-links{display:flex;align-items:center;gap:6px;}
+.hn-link{background:none;border:none;padding:7px 14px;border-radius:99px;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;}
+.hn-link:hover{color:#fff;}
+.hn-link.active{color:#c9a84c;}
+.hn-btn-trainer{background:#c9a84c;color:#111118!important;font-weight:600;border-radius:99px;padding:7px 18px;font-size:13px;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;}
+.hn-btn-trainer:hover{background:#e2b96a;}
+
+/* Secciones genéricas */
+.hs{padding:64px 28px;max-width:1100px;margin:0 auto;width:100%;}
+.hs-label{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:4px;color:#c9a84c;margin-bottom:6px;}
+.hs-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:#1a1a22;margin-bottom:6px;}
+.hs-line{width:48px;height:2px;background:linear-gradient(90deg,#c9a84c,transparent);margin-bottom:28px;}
+
+/* Hero */
+.hero-wrap{background:#111118;width:100%;}
+.hero-inner{max-width:1100px;margin:0 auto;padding:80px 28px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.hero-photo-ph{width:100%;aspect-ratio:3/4;max-width:320px;border-radius:16px;background:#1f1f2c;border:1.5px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:rgba(255,255,255,.2);font-size:13px;}
+.hero-photo-ph svg{opacity:.25;}
+.hero-badge{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:5px;color:#7a6540;margin-bottom:10px;}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:4px;color:#fff;line-height:1;margin-bottom:10px;}
+.hero-tagline{font-size:18px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:28px;font-style:italic;}
+.hero-ctarow{display:flex;gap:12px;flex-wrap:wrap;}
+.hero-cta-main{background:#c9a84c;color:#111118;font-weight:600;padding:12px 28px;border-radius:99px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;transition:background .2s;}
+.hero-cta-main:hover{background:#e2b96a;}
+.hero-cta-sec{background:transparent;color:#c9a84c;padding:11px 28px;border-radius:99px;border:1px solid rgba(201,168,76,0.4);cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;transition:border-color .2s;}
+.hero-cta-sec:hover{border-color:#c9a84c;}
+
+/* Sobre mí */
+.sobre-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.sobre-card{background:#fff;border:0.5px solid #e0d9c8;border-radius:12px;padding:22px 24px;}
+.sobre-card h3{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:#c9a84c;margin-bottom:8px;}
+.sobre-card p{font-size:14px;color:#5a5243;line-height:1.7;}
+
+/* Servicios */
+.serv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.serv-card{background:#fff;border:0.5px solid #e0d9c8;border-radius:12px;padding:24px 18px;text-align:center;transition:border-color .2s;}
+.serv-card:hover{border-color:#c9a84c;}
+.serv-icon{width:48px;height:48px;background:#f5e9c8;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;}
+.serv-card h3{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;color:#1a1a22;margin-bottom:6px;}
+.serv-card p{font-size:12px;color:#7a6540;line-height:1.6;}
+
+/* Transformaciones */
+.transf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.transf-ph{background:#fff;border:0.5px dashed #c9a84c;border-radius:12px;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#c9a84c;font-size:13px;opacity:.6;}
+
+/* Blog */
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px;}
+.blog-card{background:#fff;border:0.5px solid #e0d9c8;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.blog-card:hover{border-color:#c9a84c;}
+.blog-card-img{height:120px;background:#1a1a22;display:flex;align-items:center;justify-content:center;font-size:32px;color:rgba(201,168,76,.3);}
+.blog-card-body{padding:16px;}
+.blog-card-cat{font-size:10px;font-weight:600;letter-spacing:2px;color:#c9a84c;text-transform:uppercase;margin-bottom:6px;}
+.blog-card-title{font-size:15px;font-weight:600;color:#1a1a22;margin-bottom:6px;line-height:1.4;}
+.blog-card-desc{font-size:12px;color:#7a6540;line-height:1.6;}
+.blog-ver-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border:1px solid #c9a84c;color:#c9a84c;border-radius:99px;background:transparent;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;transition:background .2s;}
+.blog-ver-btn:hover{background:rgba(201,168,76,0.08);}
+
+/* Productos destacados */
+.prod-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.prod-tag{font-size:11px;padding:4px 12px;border-radius:99px;font-weight:500;}
+.pt-supl{background:#f5e9c8;color:#7A5800;}
+.pt-acc{background:#e6f1fb;color:#185FA5;}
+.pt-equip{background:#eaf3de;color:#3B6D11;}
+.pt-rec{background:#faeeda;color:#854F0B;}
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.prod-card-h{background:#fff;border:0.5px solid #e0d9c8;border-radius:12px;padding:20px;text-align:center;transition:border-color .2s;}
+.prod-card-h:hover{border-color:#c9a84c;}
+.prod-card-img{width:64px;height:64px;background:#f5e9c8;border-radius:10px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.prod-card-h h4{font-size:14px;font-weight:600;color:#1a1a22;margin-bottom:4px;}
+.prod-card-h p{font-size:11px;color:#7a6540;line-height:1.5;margin-bottom:8px;}
+.prod-card-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500;margin-bottom:10px;}
+.prod-card-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#c9a84c;text-decoration:none;cursor:pointer;}
+
+/* Contacto */
+.contact-bg{background:#111118;width:100%;}
+.contact-inner{max-width:1100px;margin:0 auto;padding:64px 28px;text-align:center;}
+.contact-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;color:#fff;margin-bottom:8px;}
+.contact-sub{font-size:15px;color:rgba(255,255,255,.5);margin-bottom:36px;}
+.contact-cards{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
+.contact-card{background:#1f1f2c;border:0.5px solid rgba(201,168,76,0.2);border-radius:14px;padding:24px 32px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;min-width:160px;}
+.contact-card:hover{border-color:#c9a84c;}
+.contact-card-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.contact-card h4{font-size:14px;font-weight:600;color:#fff;margin:0;}
+.contact-card span{font-size:12px;color:rgba(255,255,255,.45);}
+
+/* Portal de Miembros */
+#miembros-view{display:none;flex-direction:column;min-height:100vh;background:#111118;align-items:center;justify-content:center;text-align:center;}
+#miembros-view.active{display:flex;}
+.miembros-icon{font-size:56px;margin-bottom:24px;opacity:.4;}
+.miembros-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:4px;color:#c9a84c;margin-bottom:10px;}
+.miembros-sub{font-size:16px;color:rgba(255,255,255,.4);margin-bottom:32px;letter-spacing:1px;}
+.miembros-back{background:transparent;border:1px solid rgba(201,168,76,.3);color:#c9a84c;padding:10px 24px;border-radius:99px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;}
+.miembros-back:hover{border-color:#c9a84c;}
+
 :root{
   /* Paleta Cattaneo: Negro + Dorado */
   --bg:#f5f4f0;--bg2:#ffffff;--bg3:#f0ede6;--bg4:#e8e3d8;
@@ -481,6 +624,7 @@ document.addEventListener('DOMContentLoaded',function(){
 .empty-state-alumno p{font-size:13px;color:var(--gray);line-height:1.6;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',sans-serif;background:#f4f5f7;color:#111827;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+body.home-mode{height:auto;overflow-y:auto;display:block;}
 
 /* HEADER — negro dorado */
 .header{background:#0f0d08;border-bottom:1px solid rgba(201,168,76,0.25)!important;border-bottom:1px solid rgba(255,255,255,0.08);padding:0 1.5rem;display:flex;align-items:center;gap:1rem;height:72px;flex-shrink:0;}
@@ -1056,6 +1200,231 @@ input[type="file"]{display:none;}
 </head>
 <body>
 
+<!-- ══ HOME PÚBLICA ════════════════════════════════════ -->
+<div id="home-view" class="active">
+
+  <!-- Navbar -->
+  <header class="hn-bar">
+    <div class="hn-logo" onclick="showHome()">CATTANEO<span>PERSONAL TRAINER</span></div>
+    <nav class="hn-links">
+      <button class="hn-link active" onclick="scrollToSection('hero')">Inicio</button>
+      <button class="hn-link" onclick="scrollToSection('hs-blog')">Blog</button>
+      <button class="hn-link" onclick="scrollToSection('hs-productos')">Productos</button>
+      <button class="hn-link" onclick="showMiembros()">Ingreso de Miembros</button>
+      <button class="hn-btn-trainer" onclick="showPanel2()">Entrenador</button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section id="hero" class="hero-wrap">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">CHRISTIAN CATTANEO</div>
+        <div class="hero-name">PERSONAL<br>TRAINER</div>
+        <div class="hero-tagline">"Transformá tu cuerpo.<br>Transformá tu vida."</div>
+        <div class="hero-ctarow">
+          <button class="hero-cta-main" onclick="scrollToSection('hs-servicios')">Conocé mis servicios</button>
+          <button class="hero-cta-sec" onclick="scrollToSection('hs-contacto')">Contacto</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div class="hero-photo-ph">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Foto de Christian</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre mí -->
+  <section id="hs-sobre" class="hs">
+    <div class="hs-label">Conóceme</div>
+    <div class="hs-title">SOBRE MÍ</div>
+    <div class="hs-line"></div>
+    <div class="sobre-grid">
+      <div class="sobre-card">
+        <h3>Historia Profesional</h3>
+        <p>Completá aquí tu trayectoria: años de experiencia, atletas acompañados, logros destacados. Este espacio es tuyo para presentarte.</p>
+      </div>
+      <div class="sobre-card">
+        <h3>Filosofía de Entrenamiento</h3>
+        <p>Tu método, tu visión, tus valores. Contale al visitante qué te diferencia y por qué tu enfoque genera resultados reales y sostenibles.</p>
+      </div>
+      <div class="sobre-card">
+        <h3>Formación</h3>
+        <p>Certificaciones, títulos, especializaciones. Tus credenciales generan confianza y validan tu expertise ante cada nuevo alumno.</p>
+      </div>
+      <div class="sobre-card">
+        <h3>Metodología</h3>
+        <p>Periodización, RIR, composición corporal. El "cómo" de tu trabajo: la estructura que convierte esfuerzo en resultados medibles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Servicios -->
+  <section id="hs-servicios" style="background:#fff;width:100%;">
+    <div class="hs">
+      <div class="hs-label">Lo que ofrezco</div>
+      <div class="hs-title">SERVICIOS</div>
+      <div class="hs-line"></div>
+      <div class="serv-grid">
+        <div class="serv-card">
+          <div class="serv-icon">🏋️</div>
+          <h3>Entrenamiento Personalizado</h3>
+          <p>Plan diseñado exclusivamente para vos, tus objetivos y tu contexto.</p>
+        </div>
+        <div class="serv-card">
+          <div class="serv-icon">💪</div>
+          <h3>Hipertrofia</h3>
+          <p>Programación específica para maximizar la ganancia muscular con ciencia.</p>
+        </div>
+        <div class="serv-card">
+          <div class="serv-icon">⭐</div>
+          <h3>Entrenamiento Femenino</h3>
+          <p>Método adaptado a la fisiología femenina y sus ciclos hormonales.</p>
+        </div>
+        <div class="serv-card">
+          <div class="serv-icon">📊</div>
+          <h3>Composición Corporal</h3>
+          <p>Control y transformación real a través de mediciones y ajustes continuos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transformaciones -->
+  <section id="hs-transf" class="hs">
+    <div class="hs-label">Resultados reales</div>
+    <div class="hs-title">TRANSFORMACIONES</div>
+    <div class="hs-line"></div>
+    <div class="transf-grid" id="hs-transf-grid">
+      <div class="transf-ph">📷<span>Caso de éxito 1</span></div>
+      <div class="transf-ph">📷<span>Caso de éxito 2</span></div>
+      <div class="transf-ph">📷<span>Caso de éxito 3</span></div>
+    </div>
+    <p style="font-size:13px;color:#aaa;margin-top:12px;">Galería preparada para imágenes reales de tus alumnos.</p>
+  </section>
+
+  <!-- Blog -->
+  <section id="hs-blog" style="background:#fff;width:100%;">
+    <div class="hs">
+      <div class="hs-label">Ideas & reflexiones</div>
+      <div class="hs-title">BLOG</div>
+      <div class="hs-line"></div>
+      <div class="blog-grid" id="hs-blog-grid">
+        <div class="blog-card">
+          <div class="blog-card-img">✍️</div>
+          <div class="blog-card-body">
+            <div class="blog-card-cat">Entrenamiento</div>
+            <div class="blog-card-title">¿Por qué el RIR cambia todo en tu entrenamiento?</div>
+            <div class="blog-card-desc">Aprende a medir el esfuerzo real y a progresar con inteligencia.</div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">💡</div>
+          <div class="blog-card-body">
+            <div class="blog-card-cat">Nutrición</div>
+            <div class="blog-card-title">Suplementación inteligente: qué funciona y qué no</div>
+            <div class="blog-card-desc">Un análisis sin rodeos de los suplementos más usados.</div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">🔥</div>
+          <div class="blog-card-body">
+            <div class="blog-card-cat">Mentalidad</div>
+            <div class="blog-card-title">Consistencia > motivación: el secreto de los que progresan</div>
+            <div class="blog-card-desc">Lo que separa a quienes logran resultados de los que no.</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <button class="blog-ver-btn">Ver todas las publicaciones →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Productos Destacados del Mes -->
+  <section id="hs-productos" class="hs">
+    <div class="hs-label">Selección mensual</div>
+    <div class="hs-title">PRODUCTOS DESTACADOS DEL MES</div>
+    <div class="hs-line"></div>
+    <div class="prod-tags">
+      <span class="prod-tag pt-supl">Suplemento</span>
+      <span class="prod-tag pt-acc">Accesorio</span>
+      <span class="prod-tag pt-equip">Equipamiento</span>
+      <span class="prod-tag pt-rec">Recomendación especial</span>
+    </div>
+    <div class="prod-grid" id="hs-prods-grid">
+      <div class="prod-card-h">
+        <div class="prod-card-img">🥤</div>
+        <span class="prod-card-tag pt-supl">Suplemento</span>
+        <h4>Whey Protein</h4>
+        <p>Recomendado para recuperación post-entrenamiento.</p>
+        <a class="prod-card-link">Ver producto →</a>
+      </div>
+      <div class="prod-card-h">
+        <div class="prod-card-img">🏋️</div>
+        <span class="prod-card-tag pt-acc">Accesorio</span>
+        <h4>Cinturón de fuerza</h4>
+        <p>Soporte lumbar esencial para sentadilla y peso muerto.</p>
+        <a class="prod-card-link">Ver producto →</a>
+      </div>
+      <div class="prod-card-h">
+        <div class="prod-card-img">⚡</div>
+        <span class="prod-card-tag pt-equip">Equipamiento</span>
+        <h4>Bandas elásticas</h4>
+        <p>Kit completo para entrenamiento en casa o viaje.</p>
+        <a class="prod-card-link">Ver producto →</a>
+      </div>
+      <div class="prod-card-h">
+        <div class="prod-card-img">⭐</div>
+        <span class="prod-card-tag pt-rec">Recomendación</span>
+        <h4>Creatina Monohidrato</h4>
+        <p>El suplemento más respaldado por la ciencia del deporte.</p>
+        <a class="prod-card-link">Ver producto →</a>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <button class="blog-ver-btn">Ver catálogo completo →</button>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="hs-contacto" class="contact-bg">
+    <div class="contact-inner">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:4px;color:#7a6540;margin-bottom:8px;">Hablemos</div>
+      <div class="contact-title">CONTACTO</div>
+      <div class="contact-sub">Escribime y empezamos a diseñar tu transformación.</div>
+      <div class="contact-cards">
+        <div class="contact-card" onclick="window.open('https://wa.me/5491100000000','_blank')">
+          <div class="contact-card-icon" style="background:#25d366;font-size:24px;">💬</div>
+          <h4>WhatsApp</h4>
+          <span>Mensaje directo</span>
+        </div>
+        <div class="contact-card" onclick="window.open('https://instagram.com/','_blank')">
+          <div class="contact-card-icon" style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);font-size:22px;">📷</div>
+          <h4>Instagram</h4>
+          <span>@christiancattaneo</span>
+        </div>
+        <div class="contact-card" onclick="window.open('mailto:christian@cattaneotrainer.com')">
+          <div class="contact-card-icon" style="background:#c9a84c;font-size:22px;">✉️</div>
+          <h4>Email</h4>
+          <span>Consultas y presupuestos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /home-view -->
+
+<!-- ══ PORTAL DE MIEMBROS ═══════════════════════════════ -->
+<div id="miembros-view">
+  <div class="miembros-icon">🔒</div>
+  <div class="miembros-title">PORTAL DE MIEMBROS</div>
+  <div class="miembros-sub">Próximamente disponible</div>
+  <button class="miembros-back" onclick="showHome()">← Volver al inicio</button>
+</div>
+
 <!-- ══ PANTALLA DE LOGIN ══════════════════════════════ -->
 <div class="login-screen" id="login-screen">
 
@@ -1155,7 +1524,7 @@ input[type="file"]{display:none;}
 <div id="admin-view" style="display:none;flex-direction:column;height:100vh;">
 <div class="header">
   <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
-    
+    <button onclick="showHome()" style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;padding:6px 14px;border-radius:99px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">← Inicio</button>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:#c9a84c;">CHRISTIAN CATTANEO</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:5px;color:#7a6540;">PERSONAL TRAINER</div>
@@ -1167,6 +1536,7 @@ input[type="file"]{display:none;}
     <button class="nav-btn" onclick="showPanel('calendario',this)">Calendario</button>
     <button class="nav-btn" onclick="showPanel('novedades',this)" style="border-color:rgba(201,168,76,0.4);color:#c9a84c;">Novedades</button>
     <button class="nav-btn" onclick="showPanel('suplementacion',this)" style="border-color:rgba(201,168,76,0.5);color:#c9a84c;">💊 Suplementación</button>
+    <button class="nav-btn" onclick="showPanel('contenido',this)" style="border-color:rgba(201,168,76,0.5);color:#c9a84c;">🖊 Contenido</button>
   </nav>
   <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;">
     <button onclick="supabaseSync()" id="btn-sb-sync" class="gdrive-btn gdrive-sync" title="Sincronizar con la nube">☁ Sync</button>
@@ -1479,6 +1849,12 @@ input[type="file"]{display:none;}
   <button class="install-close" onclick="cerrarInstall()">✕</button>
 </div>
 
+    <!-- ══ PANEL GESTOR DE CONTENIDO ════════════════════ -->
+    <div class="panel" id="panel-contenido">
+      <div id="gc-view-list"><!-- lista principal --></div>
+      <div id="gc-view-form" style="display:none;"><!-- formulario edición --></div>
+    </div>
+
 </div><!-- fin admin-view -->
 
 <script>
@@ -1687,6 +2063,7 @@ function showPanel(n,btn){
   if(n==='calendario'){refreshCalFilter();renderCalendar();}
   if(n==='planificador'){refreshPlanAlumno();document.getElementById('plan-fecha').value=new Date().toISOString().substr(0,10);}
   if(n==='novedades'){renderNovedadesAdmin();}
+  if(n==='contenido'){renderGestorContenido();}
 }
 function switchTab(paneId,btn){
   document.querySelectorAll('#modal-alumno .tab-pane').forEach(p=>p.classList.remove('active'));
@@ -2816,6 +3193,23 @@ function moveRunBlock(ri,dir){
   renderRunBlocks();
 }
 
+// Convierte cualquier URL de YouTube / Shorts a embed
+function youtubeEmbedUrl(url){
+  if(!url) return null;
+  url=url.trim();
+  let id=null;
+  // youtu.be/ID
+  let m=url.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+  if(m) id=m[1];
+  // youtube.com/shorts/ID
+  if(!id){m=url.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/);if(m)id=m[1];}
+  // youtube.com/watch?v=ID
+  if(!id){m=url.match(/[?&]v=([A-Za-z0-9_-]{11})/);if(m)id=m[1];}
+  // youtube.com/embed/ID (ya está en formato embed)
+  if(!id){m=url.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/);if(m)id=m[1];}
+  return id?'https://www.youtube-nocookie.com/embed/'+id:null;
+}
+
 // Abre popup inline para cargar/editar el link de video
 function toggleVideoInput(bi,ei){
   const id='video-row-'+bi+'-'+ei;
@@ -2953,6 +3347,7 @@ function renderBlocks(){
           '</tr>';
         }).join('');
 
+        const embedUrl=youtubeEmbedUrl(ex.video);
         return'<div class="exercise-wrap '+(lettered?'lettered':'')+'">'+
           '<div class="ex-head">'+
             moveEjBtns+
@@ -2967,15 +3362,24 @@ function renderBlocks(){
           '<div id="video-row-'+bi+'-'+ei+'" class="video-input-row" style="display:'+(hasVideo?'flex':'none')+';">'+
             '<span style="font-size:11px;color:#64748b;white-space:nowrap;align-self:center;">🔗 Link:</span>'+
             '<input class="video-url-inp" type="text" placeholder="https://youtube.com/watch?v=..." value="'+escH(ex.video||'')+'" oninput="blocks['+bi+'].exercises['+ei+'].video=this.value;renderBlocks()"/>'+
-            (hasVideo?'<button class="btn-open-video" onclick="openVideo(\''+escH(ex.video)+'\')" style="white-space:nowrap;">Abrir ↗</button>':'')+''+
+            (hasVideo?'<button class="btn-open-video" onclick="openVideo(\''+escH(ex.video)+'\')" style="white-space:nowrap;">Abrir ↗</button>':'')+
           '</div>'+
-          '<table class="tbl"><thead><tr>'+
-            '<th style="width:42px">Serie</th>'+
-            '<th>Reps</th><th>Peso (kg)</th><th>RIR</th><th>Pausa (seg)</th>'+
-            '<th style="width:28px"></th>'+
-          '</tr></thead><tbody>'+seriesRows+'</tbody></table>'+
-          '<button class="btn-ico" style="margin-top:5px;font-size:11px;" onclick="addSerie('+bi+','+ei+')">+ Serie</button>'+
-          '<textarea class="ex-note-inp" placeholder="📝 Nota / devolución del ejercicio..." oninput="blocks['+bi+'].exercises['+ei+'].note=this.value">'+escH(ex.note||'')+'</textarea>'+
+          '<div style="display:grid;grid-template-columns:'+(embedUrl?'1fr 280px':'1fr')+';gap:12px;align-items:start;">'+
+            '<div>'+
+              '<table class="tbl"><thead><tr>'+
+                '<th style="width:42px">Serie</th>'+
+                '<th>Reps</th><th>Peso (kg)</th><th>RIR</th><th>Pausa (seg)</th>'+
+                '<th style="width:28px"></th>'+
+              '</tr></thead><tbody>'+seriesRows+'</tbody></table>'+
+              '<button class="btn-ico" style="margin-top:5px;font-size:11px;" onclick="addSerie('+bi+','+ei+')">+ Serie</button>'+
+              '<textarea class="ex-note-inp" placeholder="📝 Nota / devolución del ejercicio..." oninput="blocks['+bi+'].exercises['+ei+'].note=this.value">'+escH(ex.note||'')+'</textarea>'+
+            '</div>'+
+            (embedUrl?
+              '<div style="position:relative;width:100%;border-radius:8px;overflow:hidden;background:#000;aspect-ratio:16/9;">'+
+                '<iframe src="'+embedUrl+'" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>'+
+              '</div>'
+            :'')+
+          '</div>'+
         '</div>';
       }).join(''))+
       (!esCardio(b.type)&&!esMetabolico(b.type)?'<div class="block-foot">'+
@@ -4392,6 +4796,9 @@ function exportarBackup(){
   const data={
     students:JSON.parse(localStorage.getItem('cct_students')||'[]'),
     sessions:JSON.parse(localStorage.getItem('cct_sessions')||'[]'),
+    blog:JSON.parse(localStorage.getItem('cct_blog')||'[]'),
+    home_prods:JSON.parse(localStorage.getItem('cct_home_prods')||'[]'),
+    transf:JSON.parse(localStorage.getItem('cct_transf')||'[]'),
     exportedAt:new Date().toISOString()
   };
   const fecha=new Date().toLocaleDateString('es-AR').replace(/\//g,'-');
@@ -4869,6 +5276,439 @@ if(isIOS&&!isInStandalone){
     alert('Para instalar:\n1. Tocá el botón Compartir ⬆ en Safari\n2. Seleccioná "Agregar a pantalla de inicio"\n3. ¡Listo! La app quedará en tu escritorio.');
   };
 }
+
+// ═══════════════════════════════════════════════════════
+// GESTOR DE CONTENIDO
+// ═══════════════════════════════════════════════════════
+
+// --- Storage ---
+function gcLoad(key){ try{return JSON.parse(localStorage.getItem(key)||'[]');}catch(e){return[];} }
+function gcSave(key,val){ try{localStorage.setItem(key,JSON.stringify(val));}catch(e){alert('⚠️ No se pudo guardar. El almacenamiento está lleno.');} }
+
+let gcBlog  = gcLoad('cct_blog');
+let gcProds = gcLoad('cct_home_prods');
+let gcTransf= gcLoad('cct_transf');
+
+function gcSaveAll(){
+  gcSave('cct_blog', gcBlog);
+  gcSave('cct_home_prods', gcProds);
+  gcSave('cct_transf', gcTransf);
+}
+
+// --- Estado del formulario ---
+let gcSection = 'blog'; // blog | prods | transf
+let gcEditId  = null;
+
+// --- Utilidades ---
+function gcUid(){ return Date.now().toString(36)+Math.random().toString(36).substr(2,5); }
+function gcEsc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Compresión de imagen igual que suplementos
+function gcCompressImage(file, cb){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      const MAX = 800;
+      let w = img.width, h = img.height;
+      if(w>MAX||h>MAX){ if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;} }
+      const canvas = document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      cb(canvas.toDataURL('image/jpeg',0.72));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// --- Render principal del panel ---
+function renderGestorContenido(){
+  const tabs = [
+    {id:'blog',  label:'📝 Blog'},
+    {id:'prods', label:'🛍 Productos'},
+    {id:'transf',label:'⭐ Transformaciones'},
+  ];
+  const tabsHtml = tabs.map(t=>
+    `<button onclick="gcSetSection('${t.id}')" id="gc-tab-${t.id}" style="padding:8px 18px;border-radius:99px;border:1px solid rgba(201,168,76,${gcSection===t.id?'0.8':'0.3'});background:${gcSection===t.id?'#c9a84c':'rgba(201,168,76,0.06)'};color:${gcSection===t.id?'#111':'#c9a84c'};font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">${t.label}</button>`
+  ).join('');
+
+  let listHtml = '';
+  if(gcSection==='blog')   listHtml = gcRenderBlogList();
+  if(gcSection==='prods')  listHtml = gcRenderProdsList();
+  if(gcSection==='transf') listHtml = gcRenderTransfList();
+
+  document.getElementById('gc-view-form').style.display='none';
+  document.getElementById('gc-view-list').style.display='block';
+  document.getElementById('gc-view-list').innerHTML = `
+    <div style="background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(201,168,76,0.03));border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#a07830,#c9a84c);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🖊</div>
+      <div style="flex:1;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#c9a84c;">Gestor de <span style="color:#fff;">Contenido</span></div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px;">El contenido publicado aquí aparece automáticamente en la Home pública</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;">${tabsHtml}</div>
+    ${listHtml}
+  `;
+}
+
+function gcSetSection(s){ gcSection=s; renderGestorContenido(); }
+
+// --- BLOG list ---
+function gcRenderBlogList(){
+  const cats = ['Entrenamiento','Nutrición','Mentalidad','Suplementación','General'];
+  const items = gcBlog.length ? gcBlog.map((p,i)=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:10px;display:grid;grid-template-columns:${p.imagen?'64px 1fr':'1fr'};gap:12px;align-items:start;">
+      ${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;">`:''}
+      <div>
+        <div style="font-size:10px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">${gcEsc(p.categoria||'General')} · ${gcEsc(p.fecha||'')}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">${gcEsc(p.titulo)}</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">${gcEsc(p.resumen)}</div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="gcEditBlog(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:#c9a84c;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">✏ Editar</button>
+          <button onclick="gcDeleteBlog(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);color:#f87171;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">🗑 Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('') : `<div style="text-align:center;padding:3rem;color:var(--gray);">Sin publicaciones aún.<br><span style="font-size:12px;">Las que crees aparecerán en la sección Blog de la Home.</span></div>`;
+
+  return `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+      <button onclick="gcNewBlog()" style="padding:9px 18px;border-radius:8px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.1);color:#c9a84c;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">+ Nueva publicación</button>
+    </div>
+    ${items}`;
+}
+
+// --- PRODS list ---
+function gcRenderProdsList(){
+  const items = gcProds.length ? gcProds.map((p,i)=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:10px;display:grid;grid-template-columns:${p.imagen?'64px 1fr':'1fr'};gap:12px;align-items:start;${p.activo===false?'opacity:.5':''}">
+      ${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;">`:''}
+      <div>
+        <div style="font-size:10px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">${gcEsc(p.categoria||'')} ${p.activo===false?'· <span style="color:#f87171;">Oculto</span>':''}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">${gcEsc(p.nombre)}</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">${gcEsc(p.descripcion)}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="gcEditProd(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:#c9a84c;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">✏ Editar</button>
+          <button onclick="gcToggleProd(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(201,168,76,0.3);background:rgba(201,168,76,0.05);color:#c9a84c;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">${p.activo===false?'👁 Mostrar':'🙈 Ocultar'}</button>
+          <button onclick="gcDeleteProd(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);color:#f87171;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">🗑 Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('') : `<div style="text-align:center;padding:3rem;color:var(--gray);">Sin productos aún.<br><span style="font-size:12px;">Los que crees aparecerán en Productos destacados de la Home.</span></div>`;
+
+  return `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+      <button onclick="gcNewProd()" style="padding:9px 18px;border-radius:8px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.1);color:#c9a84c;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">+ Nuevo producto</button>
+    </div>
+    ${items}`;
+}
+
+// --- TRANSF list ---
+function gcRenderTransfList(){
+  const items = gcTransf.length ? gcTransf.map((p,i)=>`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:10px;display:grid;grid-template-columns:${p.imagen?'80px 1fr':'1fr'};gap:12px;align-items:start;${p.activo===false?'opacity:.5':''}">
+      ${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">`:''}
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">${gcEsc(p.nombre)} ${p.activo===false?'<span style="color:#f87171;font-size:11px;">· Oculto</span>':''}</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">${gcEsc(p.descripcion)}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="gcEditTransf(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.08);color:#c9a84c;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">✏ Editar</button>
+          <button onclick="gcToggleTransf(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(201,168,76,0.3);background:rgba(201,168,76,0.05);color:#c9a84c;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">${p.activo===false?'👁 Mostrar':'🙈 Ocultar'}</button>
+          <button onclick="gcDeleteTransf(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);color:#f87171;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">🗑 Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('') : `<div style="text-align:center;padding:3rem;color:var(--gray);">Sin casos aún.<br><span style="font-size:12px;">Los que crees aparecerán en Transformaciones de la Home.</span></div>`;
+
+  return `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+      <button onclick="gcNewTransf()" style="padding:9px 18px;border-radius:8px;border:1px solid rgba(201,168,76,0.4);background:rgba(201,168,76,0.1);color:#c9a84c;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">+ Nuevo caso</button>
+    </div>
+    ${items}`;
+}
+
+// ── FORMULARIOS ──────────────────────────────────────────
+
+function gcShowForm(html){
+  document.getElementById('gc-view-list').style.display='none';
+  document.getElementById('gc-view-form').style.display='block';
+  document.getElementById('gc-view-form').innerHTML=html;
+}
+
+// BLOG form
+function gcNewBlog(){ gcEditId=null; gcShowForm(gcBlogForm({})); }
+function gcEditBlog(i){ gcEditId=i; gcShowForm(gcBlogForm(gcBlog[i])); }
+function gcBlogForm(p){
+  const cats=['Entrenamiento','Nutrición','Mentalidad','Suplementación','General'];
+  return`
+  <div style="background:var(--bg2);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:1.5rem;max-width:700px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#c9a84c;margin-bottom:1.25rem;">${gcEditId===null?'Nueva publicación':'Editar publicación'}</div>
+    <div style="display:grid;gap:12px;">
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Imagen</label>
+        <img id="gc-blog-imgprev" src="${gcEsc(p.imagen||'')}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;display:${p.imagen?'block':'none'};margin-bottom:6px;">
+        <input type="file" accept="image/*" onchange="gcBlogImg(event)" style="font-size:12px;color:var(--gray2);">
+        <input type="hidden" id="gc-blog-img" value="${gcEsc(p.imagen||'')}">
+      </div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Título *</label>
+        <input id="gc-blog-titulo" value="${gcEsc(p.titulo||'')}" placeholder="Título de la publicación" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Categoría</label>
+          <select id="gc-blog-cat" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;">
+            ${cats.map(c=>`<option ${(p.categoria||'General')===c?'selected':''}>${c}</option>`).join('')}
+          </select></div>
+        <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Fecha</label>
+          <input type="date" id="gc-blog-fecha" value="${gcEsc(p.fecha||new Date().toISOString().substr(0,10))}" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;"></div>
+      </div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Resumen (aparece en la Home)</label>
+        <textarea id="gc-blog-resumen" rows="2" placeholder="Breve descripción visible en la card de la Home" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;box-sizing:border-box;">${gcEsc(p.resumen||'')}</textarea></div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Contenido completo</label>
+        <textarea id="gc-blog-contenido" rows="6" placeholder="Texto completo del artículo..." style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;box-sizing:border-box;">${gcEsc(p.contenido||'')}</textarea></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button onclick="gcSaveBlog()" style="padding:10px 24px;border-radius:8px;border:1px solid rgba(201,168,76,0.6);background:#c9a84c;color:#111;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">💾 Guardar</button>
+      <button onclick="renderGestorContenido()" style="padding:10px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--gray2);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Cancelar</button>
+    </div>
+  </div>`;
+}
+function gcBlogImg(e){
+  const f=e.target.files[0]; if(!f)return;
+  gcCompressImage(f,d=>{
+    document.getElementById('gc-blog-img').value=d;
+    const prev=document.getElementById('gc-blog-imgprev');
+    prev.src=d; prev.style.display='block';
+  });
+}
+function gcSaveBlog(){
+  const t=document.getElementById('gc-blog-titulo').value.trim();
+  if(!t){alert('El título es obligatorio.');return;}
+  const obj={
+    id: gcEditId!==null?gcBlog[gcEditId].id:gcUid(),
+    titulo:t,
+    resumen:document.getElementById('gc-blog-resumen').value.trim(),
+    contenido:document.getElementById('gc-blog-contenido').value.trim(),
+    categoria:document.getElementById('gc-blog-cat').value,
+    fecha:document.getElementById('gc-blog-fecha').value,
+    imagen:document.getElementById('gc-blog-img').value,
+  };
+  if(gcEditId!==null) gcBlog[gcEditId]=obj; else gcBlog.unshift(obj);
+  gcSave('cct_blog',gcBlog);
+  renderHomeBlog(); renderGestorContenido();
+  if(typeof showToast==='function') showToast('✅ Publicación guardada');
+}
+function gcDeleteBlog(i){ if(!confirm('¿Eliminar esta publicación?'))return; gcBlog.splice(i,1); gcSave('cct_blog',gcBlog); renderHomeBlog(); renderGestorContenido(); }
+
+// PRODS form
+function gcNewProd(){ gcEditId=null; gcShowForm(gcProdForm({})); }
+function gcEditProd(i){ gcEditId=i; gcShowForm(gcProdForm(gcProds[i])); }
+function gcToggleProd(i){ gcProds[i].activo=gcProds[i].activo===false?true:false; gcSave('cct_home_prods',gcProds); renderHomeProds(); renderGestorContenido(); }
+function gcProdForm(p){
+  const cats=['Suplemento','Accesorio','Equipamiento','Recomendación especial'];
+  return`
+  <div style="background:var(--bg2);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:1.5rem;max-width:700px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#c9a84c;margin-bottom:1.25rem;">${gcEditId===null?'Nuevo producto':'Editar producto'}</div>
+    <div style="display:grid;gap:12px;">
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Imagen</label>
+        <img id="gc-prod-imgprev" src="${gcEsc(p.imagen||'')}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;display:${p.imagen?'block':'none'};margin-bottom:6px;">
+        <input type="file" accept="image/*" onchange="gcProdImg(event)" style="font-size:12px;color:var(--gray2);">
+        <input type="hidden" id="gc-prod-img" value="${gcEsc(p.imagen||'')}">
+      </div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Nombre *</label>
+        <input id="gc-prod-nombre" value="${gcEsc(p.nombre||'')}" placeholder="Nombre del producto" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Categoría</label>
+        <select id="gc-prod-cat" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;">
+          ${cats.map(c=>`<option ${(p.categoria||'Suplemento')===c?'selected':''}>${c}</option>`).join('')}
+        </select></div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Descripción</label>
+        <textarea id="gc-prod-desc" rows="3" placeholder="Descripción breve del producto" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;box-sizing:border-box;">${gcEsc(p.descripcion||'')}</textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Precio (opcional)</label>
+          <input id="gc-prod-precio" value="${gcEsc(p.precio||'')}" placeholder="Ej: $12.500" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div>
+        <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Link externo (opcional)</label>
+          <input id="gc-prod-link" value="${gcEsc(p.link||'')}" placeholder="https://..." style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button onclick="gcSaveProd()" style="padding:10px 24px;border-radius:8px;border:1px solid rgba(201,168,76,0.6);background:#c9a84c;color:#111;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">💾 Guardar</button>
+      <button onclick="renderGestorContenido()" style="padding:10px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--gray2);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Cancelar</button>
+    </div>
+  </div>`;
+}
+function gcProdImg(e){
+  const f=e.target.files[0]; if(!f)return;
+  gcCompressImage(f,d=>{
+    document.getElementById('gc-prod-img').value=d;
+    const prev=document.getElementById('gc-prod-imgprev');
+    prev.src=d; prev.style.display='block';
+  });
+}
+function gcSaveProd(){
+  const n=document.getElementById('gc-prod-nombre').value.trim();
+  if(!n){alert('El nombre es obligatorio.');return;}
+  const obj={
+    id: gcEditId!==null?gcProds[gcEditId].id:gcUid(),
+    nombre:n,
+    categoria:document.getElementById('gc-prod-cat').value,
+    descripcion:document.getElementById('gc-prod-desc').value.trim(),
+    precio:document.getElementById('gc-prod-precio').value.trim(),
+    link:document.getElementById('gc-prod-link').value.trim(),
+    imagen:document.getElementById('gc-prod-img').value,
+    activo:true,
+  };
+  if(gcEditId!==null) gcProds[gcEditId]=obj; else gcProds.unshift(obj);
+  gcSave('cct_home_prods',gcProds);
+  renderHomeProds(); renderGestorContenido();
+  if(typeof showToast==='function') showToast('✅ Producto guardado');
+}
+function gcDeleteProd(i){ if(!confirm('¿Eliminar este producto?'))return; gcProds.splice(i,1); gcSave('cct_home_prods',gcProds); renderHomeProds(); renderGestorContenido(); }
+
+// TRANSF form
+function gcNewTransf(){ gcEditId=null; gcShowForm(gcTransfForm({})); }
+function gcEditTransf(i){ gcEditId=i; gcShowForm(gcTransfForm(gcTransf[i])); }
+function gcToggleTransf(i){ gcTransf[i].activo=gcTransf[i].activo===false?true:false; gcSave('cct_transf',gcTransf); renderHomeTransf(); renderGestorContenido(); }
+function gcTransfForm(p){
+  return`
+  <div style="background:var(--bg2);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:1.5rem;max-width:700px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#c9a84c;margin-bottom:1.25rem;">${gcEditId===null?'Nuevo caso':'Editar caso'}</div>
+    <div style="display:grid;gap:12px;">
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Imagen</label>
+        <img id="gc-transf-imgprev" src="${gcEsc(p.imagen||'')}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;display:${p.imagen?'block':'none'};margin-bottom:6px;">
+        <input type="file" accept="image/*" onchange="gcTransfImg(event)" style="font-size:12px;color:var(--gray2);">
+        <input type="hidden" id="gc-transf-img" value="${gcEsc(p.imagen||'')}">
+      </div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Nombre o alias *</label>
+        <input id="gc-transf-nombre" value="${gcEsc(p.nombre||'')}" placeholder="Nombre o alias del alumno" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div>
+      <div><label style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;">Descripción del proceso</label>
+        <textarea id="gc-transf-desc" rows="3" placeholder="Ej: -12 kg en 5 meses · Entrenamiento de fuerza + control nutricional" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;box-sizing:border-box;">${gcEsc(p.descripcion||'')}</textarea></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button onclick="gcSaveTransf()" style="padding:10px 24px;border-radius:8px;border:1px solid rgba(201,168,76,0.6);background:#c9a84c;color:#111;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">💾 Guardar</button>
+      <button onclick="renderGestorContenido()" style="padding:10px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--gray2);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Cancelar</button>
+    </div>
+  </div>`;
+}
+function gcTransfImg(e){
+  const f=e.target.files[0]; if(!f)return;
+  gcCompressImage(f,d=>{
+    document.getElementById('gc-transf-img').value=d;
+    const prev=document.getElementById('gc-transf-imgprev');
+    prev.src=d; prev.style.display='block';
+  });
+}
+function gcSaveTransf(){
+  const n=document.getElementById('gc-transf-nombre').value.trim();
+  if(!n){alert('El nombre es obligatorio.');return;}
+  const obj={
+    id: gcEditId!==null?gcTransf[gcEditId].id:gcUid(),
+    nombre:n,
+    descripcion:document.getElementById('gc-transf-desc').value.trim(),
+    imagen:document.getElementById('gc-transf-img').value,
+    activo:true,
+  };
+  if(gcEditId!==null) gcTransf[gcEditId]=obj; else gcTransf.unshift(obj);
+  gcSave('cct_transf',gcTransf);
+  renderHomeTransf(); renderGestorContenido();
+  if(typeof showToast==='function') showToast('✅ Caso guardado');
+}
+function gcDeleteTransf(i){ if(!confirm('¿Eliminar este caso?'))return; gcTransf.splice(i,1); gcSave('cct_transf',gcTransf); renderHomeTransf(); renderGestorContenido(); }
+
+// ── RENDER DINÁMICO EN LA HOME ───────────────────────────
+
+// Blog en Home
+function renderHomeBlog(){
+  const el=document.getElementById('hs-blog-grid');
+  const btnAll=document.getElementById('hs-blog-vermas');
+  if(!el) return;
+  const data=gcLoad('cct_blog');
+  if(!data.length){
+    el.innerHTML=`
+      <div class="blog-card"><div class="blog-card-img">✍️</div><div class="blog-card-body"><div class="blog-card-cat">Entrenamiento</div><div class="blog-card-title">¿Por qué el RIR cambia todo en tu entrenamiento?</div><div class="blog-card-desc">Aprende a medir el esfuerzo real y a progresar con inteligencia.</div></div></div>
+      <div class="blog-card"><div class="blog-card-img">💡</div><div class="blog-card-body"><div class="blog-card-cat">Nutrición</div><div class="blog-card-title">Suplementación inteligente: qué funciona y qué no</div><div class="blog-card-desc">Un análisis sin rodeos de los suplementos más populares.</div></div></div>
+      <div class="blog-card"><div class="blog-card-img">🔥</div><div class="blog-card-body"><div class="blog-card-cat">Mentalidad</div><div class="blog-card-title">Consistencia > motivación: el secreto de los que progresan</div><div class="blog-card-desc">Lo que separa a quienes logran resultados de los que no.</div></div></div>`;
+    return;
+  }
+  const top3=data.slice(0,3);
+  el.innerHTML=top3.map(p=>`
+    <div class="blog-card" onclick="gcOpenPost('${p.id}')">
+      <div class="blog-card-img">${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:100%;height:100%;object-fit:cover;">`:'📝'}</div>
+      <div class="blog-card-body">
+        <div class="blog-card-cat">${gcEsc(p.categoria||'General')}</div>
+        <div class="blog-card-title">${gcEsc(p.titulo)}</div>
+        <div class="blog-card-desc">${gcEsc(p.resumen)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function gcOpenPost(id){
+  const data=gcLoad('cct_blog');
+  const p=data.find(x=>x.id===id); if(!p)return;
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box;';
+  modal.innerHTML=`<div style="background:#1a1a22;border:1px solid rgba(201,168,76,0.3);border-radius:14px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;padding:2rem;">
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem;">
+      <div style="font-size:11px;color:#c9a84c;font-weight:600;letter-spacing:1px;text-transform:uppercase;">${gcEsc(p.categoria||'')} · ${gcEsc(p.fecha||'')}</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;color:#9ca3af;font-size:20px;cursor:pointer;line-height:1;">×</button>
+    </div>
+    ${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:100%;max-height:240px;object-fit:cover;border-radius:10px;margin-bottom:1rem;">`:''}
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#fff;margin-bottom:1rem;">${gcEsc(p.titulo)}</h2>
+    <div style="font-size:14px;color:rgba(255,255,255,.75);line-height:1.8;white-space:pre-wrap;">${gcEsc(p.contenido||p.resumen)}</div>
+  </div>`;
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  document.body.appendChild(modal);
+}
+
+// Productos en Home
+function renderHomeProds(){
+  const el=document.getElementById('hs-prods-grid');
+  if(!el) return;
+  const data=gcLoad('cct_home_prods').filter(p=>p.activo!==false);
+  if(!data.length){
+    el.innerHTML=`
+      <div class="prod-card-h"><div class="prod-card-img">🥤</div><span class="prod-card-tag pt-supl">Suplemento</span><h4>Whey Protein</h4><p>Recomendado para recuperación post-entrenamiento.</p><a class="prod-card-link">Ver producto →</a></div>
+      <div class="prod-card-h"><div class="prod-card-img">🏋️</div><span class="prod-card-tag pt-acc">Accesorio</span><h4>Cinturón de fuerza</h4><p>Soporte lumbar esencial para sentadilla y peso muerto.</p><a class="prod-card-link">Ver producto →</a></div>
+      <div class="prod-card-h"><div class="prod-card-img">⚡</div><span class="prod-card-tag pt-equip">Equipamiento</span><h4>Bandas elásticas</h4><p>Kit completo para entrenamiento en casa o viaje.</p><a class="prod-card-link">Ver producto →</a></div>
+      <div class="prod-card-h"><div class="prod-card-img">⭐</div><span class="prod-card-tag pt-rec">Recomendación</span><h4>Creatina Monohidrato</h4><p>El suplemento más respaldado por la ciencia del deporte.</p><a class="prod-card-link">Ver producto →</a></div>`;
+    return;
+  }
+  const catTag={'Suplemento':'pt-supl','Accesorio':'pt-acc','Equipamiento':'pt-equip','Recomendación especial':'pt-rec'};
+  el.innerHTML=data.map(p=>`
+    <div class="prod-card-h">
+      ${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:64px;height:64px;object-fit:cover;border-radius:10px;margin:0 auto 12px;">`:`<div class="prod-card-img">📦</div>`}
+      <span class="prod-card-tag ${catTag[p.categoria]||'pt-rec'}">${gcEsc(p.categoria)}</span>
+      <h4>${gcEsc(p.nombre)}</h4>
+      <p>${gcEsc(p.descripcion)}</p>
+      ${p.precio?`<div style="font-size:13px;font-weight:700;color:#c9a84c;margin-bottom:6px;">${gcEsc(p.precio)}</div>`:''}
+      ${p.link?`<a href="${gcEsc(p.link)}" target="_blank" class="prod-card-link">Ver producto →</a>`:`<span class="prod-card-link" style="opacity:.4;">Sin link</span>`}
+    </div>`).join('');
+}
+
+// Transformaciones en Home
+function renderHomeTransf(){
+  const el=document.getElementById('hs-transf-grid');
+  if(!el) return;
+  const data=gcLoad('cct_transf').filter(p=>p.activo!==false);
+  if(!data.length){
+    el.innerHTML=`
+      <div class="transf-ph">📷<span>Caso de éxito 1</span></div>
+      <div class="transf-ph">📷<span>Caso de éxito 2</span></div>
+      <div class="transf-ph">📷<span>Caso de éxito 3</span></div>`;
+    return;
+  }
+  el.innerHTML=data.slice(0,6).map(p=>`
+    <div style="border-radius:12px;overflow:hidden;background:#1a1a22;border:0.5px solid rgba(201,168,76,0.2);position:relative;">
+      ${p.imagen?`<img src="${gcEsc(p.imagen)}" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;">`:`<div style="aspect-ratio:3/4;background:#1f1f2c;display:flex;align-items:center;justify-content:center;font-size:40px;opacity:.3;">📷</div>`}
+      <div style="padding:10px 12px;">
+        <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">${gcEsc(p.nombre)}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);">${gcEsc(p.descripcion)}</div>
+      </div>
+    </div>`).join('');
+}
+
+// Inicializar Home con datos del gestor al cargar
+function initHomeContenido(){
+  renderHomeBlog();
+  renderHomeProds();
+  renderHomeTransf();
+}
+
 </script>
 <!-- MODAL SUPLEMENTACIÓN — PEDIDO WHATSAPP -->
 <div id="modal-supl">
