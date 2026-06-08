@@ -4204,17 +4204,28 @@ function confirmarCopia(){
 // ═══════════════════════════════════════════════════════
 function buildHTML(se){
   const stu=getStu(se.alumnoId);const isRun=se.modo==='running';
-  const accent=isRun?'#16a34a':'#1d4ed8';const accentL=isRun?'#dcfce7':'#eff6ff';const accentB=isRun?'#86efac':'#bfdbfe';
+  const runAccent='#16a34a';
+  function ytEmbed(url){
+    if(!url||!url.trim())return null;
+    let id=null,m;
+    m=url.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);if(m)id=m[1];
+    if(!id){m=url.match(/[?&]v=([A-Za-z0-9_-]{11})/);if(m)id=m[1];}
+    if(!id){m=url.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/);if(m)id=m[1];}
+    if(!id){m=url.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/);if(m)id=m[1];}
+    return id?'https://www.youtube-nocookie.com/embed/'+id:null;
+  }
   let blocks_html='';
   if(isRun){
     (se.runBlocks||[]).forEach((b,bi)=>{
-      blocks_html+='<div class="block"><h3>Bloque '+(bi+1)+': '+(b.tipo==='fondo'?'🏃 FONDO '+(b.subtipo||'').toUpperCase():b.tipo==='intervalos'?'⚡ INTERVALOS':b.tipo==='tempo'?'🎯 TEMPO / UMBRAL':'')+'</h3>';
+      const tipoLabel=b.tipo==='fondo'?'🏃 FONDO '+(b.subtipo||'').toUpperCase():b.tipo==='intervalos'?'⚡ INTERVALOS':b.tipo==='tempo'?'🎯 TEMPO / UMBRAL':'';
+      blocks_html+='<div class="block run-block"><div class="block-head-exp"><span class="block-type-badge run-badge-exp">'+tipoLabel+'</span></div>';
       if(b.tipo==='fondo'){
-        blocks_html+='<div class="fields"><div class="field"><label>Distancia</label><span>'+(b.distancia||'—')+' km</span></div><div class="field"><label>Tiempo</label><span>'+(b.tiempo||'—')+' min</span></div><div class="field"><label>Zona</label><span>'+(b.zona||'—')+'</span></div><div class="field"><label>Pace</label><span>'+(b.pace||'—')+' min/km</span></div></div>';
-        if(b.bloquesProg) blocks_html+='<p><strong>Progresión:</strong> '+escH(b.bloquesProg)+'</p>';
-        if(b.hidratacion) blocks_html+='<p><strong>Hidratación:</strong> '+escH(b.hidratacion)+'</p>';
+        blocks_html+='<div class="fields-exp"><div class="field-exp"><div class="field-label">Distancia</div><div class="field-val">'+(b.distancia||'—')+' km</div></div><div class="field-exp"><div class="field-label">Tiempo</div><div class="field-val">'+(b.tiempo||'—')+' min</div></div><div class="field-exp"><div class="field-label">Zona</div><div class="field-val">'+(b.zona||'—')+'</div></div><div class="field-exp"><div class="field-label">Pace</div><div class="field-val">'+(b.pace||'—')+' min/km</div></div></div>';
+        if(b.bloquesProg) blocks_html+='<p class="run-detail"><strong>Progresión:</strong> '+escH(b.bloquesProg)+'</p>';
+        if(b.hidratacion) blocks_html+='<p class="run-detail"><strong>Hidratación:</strong> '+escH(b.hidratacion)+'</p>';
       } else if(b.tipo==='intervalos'){
-        blocks_html+='<p><strong>'+(b.totalSeries||'—')+' series × '+(b.totalReps||'—')+' reps</strong></p><table><thead><tr><th>#</th><th>Distancia</th><th>Pace</th><th>Seg/100m</th><th>Tiempo pasada</th><th>Micropausa</th><th>µ Pausa</th><th>Macropausa</th></tr></thead><tbody>'+
+        blocks_html+='<p class="run-detail"><strong>'+(b.totalSeries||'—')+' series × '+(b.totalReps||'—')+' reps</strong></p>';
+        blocks_html+='<table class="tbl-exp"><thead><tr><th>#</th><th>Distancia</th><th>Pace</th><th>Seg/100m</th><th>T° pasada</th><th>µPausa tipo</th><th>µPausa</th><th>Macropausa</th></tr></thead><tbody>'+
         (b.series||[]).map((s,si)=>{
           const ps=paceToSec(s.pace);const dk=parseKm(s.dist);
           const seg100=ps?Math.round(ps/10):'—';
@@ -4223,33 +4234,76 @@ function buildHTML(se){
         }).join('')+'</tbody></table>';
       } else if(b.tipo==='tempo'){
         const ps=paceToSec(b.tempoRitmo);const seg100=ps?Math.round(ps/10):'—';
-        blocks_html+='<div class="fields"><div class="field"><label>Duración</label><span>'+(b.duracion||'—')+' min</span></div><div class="field"><label>Distancia</label><span>'+(b.distancia||'—')+' km</span></div><div class="field"><label>Ritmo umbral</label><span>'+(b.tempoRitmo||'—')+' min/km</span></div><div class="field"><label>Seg/100m</label><span>'+seg100+'"</span></div><div class="field"><label>Tolerancia</label><span>±'+(b.tolerancia||'—')+'seg</span></div></div>';
-        if(b.warmup) blocks_html+='<p><strong>🔥 Warm-up:</strong> '+escH(b.warmup)+'</p>';
+        blocks_html+='<div class="fields-exp"><div class="field-exp"><div class="field-label">Duración</div><div class="field-val">'+(b.duracion||'—')+' min</div></div><div class="field-exp"><div class="field-label">Distancia</div><div class="field-val">'+(b.distancia||'—')+' km</div></div><div class="field-exp"><div class="field-label">Ritmo umbral</div><div class="field-val">'+(b.tempoRitmo||'—')+' min/km</div></div><div class="field-exp"><div class="field-label">Seg/100m</div><div class="field-val">'+seg100+'"</div></div><div class="field-exp"><div class="field-label">Tolerancia</div><div class="field-val">±'+(b.tolerancia||'—')+'seg</div></div></div>';
+        if(b.warmup) blocks_html+='<p class="run-detail"><strong>🔥 Warm-up:</strong> '+escH(b.warmup)+'</p>';
       }
-      if(b.notes) blocks_html+='<p class="note">📝 '+escH(b.notes)+'</p>';
+      if(b.notes) blocks_html+='<div class="ex-note-exp">📝 '+escH(b.notes)+'</div>';
       blocks_html+='</div>';
     });
   } else {
     (se.blocks||[]).forEach((b,bi)=>{
       const lettered=usaLetras(b.type);
-      blocks_html+='<div class="block"><h3>Bloque '+(bi+1)+': '+escH(b.type)+(b.name?' — '+escH(b.name):'')+'</h3>';
-      (b.exercises||[]).forEach((ex,ei)=>{
-        const letter=lettered?LETTERS[ei]:'';
-        blocks_html+='<div class="ex-title">'+(letter?'<span class="ex-letter">'+letter+'</span>':'')+' '+escH(ex.name||'Ejercicio')+(ex.video?'<a href="'+(ex.video.startsWith('http')?escH(ex.video):'https://'+escH(ex.video))+'" target="_blank" class="video-link">▶ VER VIDEO</a>':'')+'</div>';
-        blocks_html+='<table><thead><tr><th>Serie</th><th>Reps</th><th>Peso (kg)</th><th>RIR</th><th>Pausa (seg)</th></tr></thead><tbody>'+
-        ex.series.map((s,si)=>'<tr><td><strong>'+letter+(si+1)+'</strong></td><td>'+escH(s.reps||'—')+'</td><td>'+escH(s.peso||'—')+'</td><td>'+escH(s.rir||'—')+'</td><td>'+escH(s.pausa||'—')+'</td></tr>').join('')+
-        '</tbody></table>';
-        if(ex.note) blocks_html+='<div class="ex-note">📝 '+escH(ex.note)+'</div>';
-      });
-      if(b.notes) blocks_html+='<p class="note">📌 '+escH(b.notes)+'</p>';
+      const isMetab=esMetabolico(b.type);
+      const isCard=esCardio(b.type);
+      blocks_html+='<div class="block'+(isMetab?' metabolico-exp':'')+'">';
+      blocks_html+='<div class="block-head-exp"><span class="block-type-badge">'+(b.type||'')+'</span>'+(b.name?'<span class="block-name-exp">'+escH(b.name)+'</span>':'')+(isMetab?'<span class="met-badge-exp">⚡ Metabólico</span>':'')+'</div>';
+      if(isCard&&b.cardio){
+        const c=b.cardio;
+        blocks_html+='<div class="fields-exp">';
+        if(c.maquina) blocks_html+='<div class="field-exp"><div class="field-label">Máquina</div><div class="field-val">'+escH(c.maquina)+'</div></div>';
+        if(c.tiempo) blocks_html+='<div class="field-exp"><div class="field-label">Tiempo</div><div class="field-val">'+escH(c.tiempo)+' min</div></div>';
+        if(c.velocidad) blocks_html+='<div class="field-exp"><div class="field-label">Velocidad</div><div class="field-val">'+escH(c.velocidad)+'</div></div>';
+        if(c.inclinacion) blocks_html+='<div class="field-exp"><div class="field-label">Inclinación</div><div class="field-val">'+escH(c.inclinacion)+'</div></div>';
+        if(c.intensidad) blocks_html+='<div class="field-exp"><div class="field-label">Intensidad</div><div class="field-val">'+escH(c.intensidad)+'</div></div>';
+        if(c.fc_obj) blocks_html+='<div class="field-exp"><div class="field-label">FC Obj</div><div class="field-val">'+escH(c.fc_obj)+'</div></div>';
+        if(c.distancia) blocks_html+='<div class="field-exp"><div class="field-label">Distancia</div><div class="field-val">'+escH(c.distancia)+' km</div></div>';
+        if(c.calorias) blocks_html+='<div class="field-exp"><div class="field-label">Calorías</div><div class="field-val">'+escH(c.calorias)+'</div></div>';
+        if(c.notas) blocks_html+='<div class="ex-note-exp">📝 '+escH(c.notas)+'</div>';
+        blocks_html+='</div>';
+      } else if(isMetab&&b.metEjercicios){
+        b.metEjercicios.forEach((ex,ei)=>{
+          blocks_html+='<div class="ex-wrap-exp">';
+          blocks_html+='<div class="ex-head-exp"><span class="ex-label-exp">Ej '+(ei+1)+'</span><span class="ex-name-exp">'+escH(ex.name||'')+'</span></div>';
+          blocks_html+='<div class="fields-exp" style="margin-top:6px;">';
+          if(ex.repTiempo) blocks_html+='<div class="field-exp"><div class="field-label">Rep/Tiempo</div><div class="field-val">'+escH(ex.repTiempo)+'</div></div>';
+          if(ex.intensidad) blocks_html+='<div class="field-exp"><div class="field-label">Intensidad</div><div class="field-val">'+escH(ex.intensidad)+'</div></div>';
+          if(ex.peso) blocks_html+='<div class="field-exp"><div class="field-label">Peso (kg)</div><div class="field-val">'+escH(ex.peso)+'</div></div>';
+          if(ex.pausa) blocks_html+='<div class="field-exp"><div class="field-label">Pausa (seg)</div><div class="field-val">'+escH(ex.pausa)+'</div></div>';
+          if(ex.rir) blocks_html+='<div class="field-exp"><div class="field-label">RIR</div><div class="field-val">'+escH(ex.rir)+'</div></div>';
+          blocks_html+='</div></div>';
+        });
+      } else {
+        (b.exercises||[]).forEach((ex,ei)=>{
+          const letter=lettered?LETTERS[ei]:'';
+          const embedUrl=ytEmbed(ex.video);
+          const hasVideo=ex.video&&ex.video.trim();
+          const exHeader=letter
+            ?'<div class="ex-letter-exp">'+letter+'</div>'
+            :'<span class="ex-label-exp">Ej '+(ei+1)+'</span>';
+          const seriesRows=ex.series.map((s,si)=>{
+            const sLabel=letter?letter+(si+1):(si+1);
+            return'<tr><td><span class="serie-num-exp">'+sLabel+'</span></td><td>'+escH(s.reps||'—')+'</td><td>'+escH(s.peso||'—')+'</td><td>'+escH(s.rir||'—')+'</td><td>'+escH(s.pausa||'—')+'</td></tr>';
+          }).join('');
+          blocks_html+='<div class="ex-wrap-exp '+(lettered?'lettered-exp':'')+'">';
+          blocks_html+='<div class="ex-head-exp">'+exHeader+'<span class="ex-name-exp">'+escH(ex.name||'Ejercicio')+'</span>'+(hasVideo&&!embedUrl?'<a href="'+(ex.video.startsWith('http')?escH(ex.video):'https://'+escH(ex.video))+'" target="_blank" class="video-link-exp">▶ VIDEO</a>':'')+'</div>';
+          blocks_html+='<div style="display:grid;grid-template-columns:'+(embedUrl?'1fr 260px':'1fr')+';gap:12px;align-items:start;">';
+          blocks_html+='<div><table class="tbl-exp"><thead><tr><th style="width:42px">Serie</th><th>Reps</th><th>Peso (kg)</th><th>RIR</th><th>Pausa (seg)</th></tr></thead><tbody>'+seriesRows+'</tbody></table>';
+          if(ex.note) blocks_html+='<div class="ex-note-exp">📝 '+escH(ex.note)+'</div>';
+          blocks_html+='</div>';
+          if(embedUrl) blocks_html+='<div style="position:relative;width:100%;border-radius:8px;overflow:hidden;background:#000;aspect-ratio:16/9;"><iframe src="'+embedUrl+'" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe></div>';
+          blocks_html+='</div></div>';
+        });
+      }
+      if(b.notes) blocks_html+='<div class="block-note-exp">📌 '+escH(b.notes)+'</div>';
       blocks_html+='</div>';
     });
   }
-  return'<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>'+escH(se.titulo||'Sesión')+'</title><style>body{font-family:Arial,sans-serif;max-width:960px;margin:auto;padding:2rem;background:#f8fafc;color:#1e293b;}.logo{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:2px;margin-bottom:.5rem;}.mode-badge{display:inline-block;padding:3px 12px;border-radius:99px;font-size:12px;font-weight:700;background:'+accentL+';color:'+accent+';border:1px solid '+accentB+';margin-bottom:8px;}h1{font-size:30px;color:'+accent+';margin-bottom:4px;}.meta{color:#64748b;font-size:14px;margin-bottom:2rem;border-bottom:2px solid #e2e8f0;padding-bottom:1rem;}.block{background:#fff;border:1px solid #e2e8f0;border-left:4px solid '+accent+';border-radius:10px;padding:1.25rem;margin-bottom:1.25rem;page-break-inside:avoid;}.block h3{font-size:13px;font-weight:800;color:'+accent+';text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}.fields{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}.field label{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:3px;}.field span{font-size:15px;font-weight:700;color:#1e293b;}.ex-title{font-weight:700;font-size:14px;margin:14px 0 6px;display:flex;align-items:center;gap:6px;}.ex-letter{width:22px;height:22px;background:'+accent+';color:#fff;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:6px;}th{background:'+accent+';color:#fff;padding:7px 10px;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}td{padding:7px 10px;text-align:center;border-bottom:1px solid #e2e8f0;}tr:nth-child(even) td{background:#f8fafc;}.ex-note{background:#fff7ed;border-left:3px solid #fb923c;border-radius:0 6px 6px 0;padding:6px 10px;font-size:12px;color:#9a3412;margin:6px 0 10px;font-style:italic;}.note{font-size:12px;color:#64748b;font-style:italic;margin-top:6px;}.video-link{display:inline-flex;align-items:center;gap:4px;margin-left:10px;padding:3px 10px;background:#fee2e2;border:1px solid #fca5a5;border-radius:5px;color:#dc2626;font-size:11px;font-weight:700;text-decoration:none;vertical-align:middle;}.descarga{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:1.25rem;margin-top:1.5rem;}.footer{margin-top:2rem;font-size:11px;color:#94a3b8;text-align:center;border-top:1px solid #e2e8f0;padding-top:1rem;}@media print{body{padding:1rem;}}</style></head><body>'+
-  '<div class="logo">Christian Cattaneo Trainer</div><div class="mode-badge">'+(isRun?'🏃 Running':'🏋️ Fuerza')+'</div><h1>'+escH(se.titulo||'Sesión')+'</h1><div class="meta"><strong>Alumno:</strong> '+escH(stu?.nombre||'—')+' &nbsp;|&nbsp; <strong>Fecha:</strong> '+(se.fecha||'—')+' &nbsp;|&nbsp; <strong>Nivel:</strong> '+escH(stu?.nivel||'—')+' &nbsp;|&nbsp; <strong>Objetivo:</strong> '+escH(stu?.objetivo||'—')+'</div>'+
+  const CSS=`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap');*{box-sizing:border-box;}body{font-family:'Inter',Arial,sans-serif;max-width:980px;margin:auto;padding:2rem;background:#f3f3f3;color:#111827;}header{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #e5e7eb;}.exp-logo{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}.exp-title{font-family:'Bebas Neue',Impact,sans-serif;font-size:36px;letter-spacing:2px;color:#111827;margin:0 0 2px;}.exp-meta{font-size:12px;color:#6b7280;}.exp-mode-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:99px;font-size:11px;font-weight:700;margin-bottom:8px;}.exp-mode-badge.fuerza{background:rgba(212,175,55,0.15);color:#a07830;border:1px solid rgba(212,175,55,0.5);}.exp-mode-badge.run{background:rgba(22,163,74,0.12);color:#15803d;border:1px solid rgba(22,163,74,0.4);}.block{background:#ffffff;border:1px solid #D4AF37;border-radius:10px;padding:1rem;margin-bottom:1rem;border-left:4px solid #D4AF37;box-shadow:4px 6px 20px rgba(0,0,0,0.12),0 1px 3px rgba(212,175,55,0.2);page-break-inside:avoid;}.block.run-block{border-color:#16a34a;border-left-color:#16a34a;box-shadow:4px 6px 20px rgba(0,0,0,0.1),0 1px 3px rgba(22,163,74,0.2);}.block.metabolico-exp{border-left-color:#f59e0b;}.block-head-exp{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}.block-type-badge{padding:5px 11px;background:#5a5a5a;border-radius:6px;color:#ffffff;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;}.run-badge-exp{background:#15803d;}.block-name-exp{font-size:13px;font-weight:700;color:#111827;}.met-badge-exp{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(245,158,11,0.12);color:#d97706;border:1px solid rgba(245,158,11,0.35);}.ex-wrap-exp{margin-bottom:8px;border:1px solid rgba(201,168,76,0.25);border-left:4px solid #c9a84c;border-radius:6px;padding:10px 12px;background:#fff;}.ex-wrap-exp.lettered-exp{border-left-color:#c9a84c;}.ex-head-exp{display:flex;align-items:center;gap:8px;margin-bottom:8px;}.ex-letter-exp{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#a07830,#e2b96a);color:#1a1208;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Bebas Neue',Impact,sans-serif;}.ex-label-exp{font-size:10px;font-weight:700;color:#a07830;text-transform:uppercase;letter-spacing:0.5px;}.ex-name-exp{font-size:13px;font-weight:700;color:#111827;}.tbl-exp{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:4px;}.tbl-exp th{padding:5px 7px;text-align:center;color:#ffffff;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #444;font-weight:700;background:#5a5a5a;}.tbl-exp td{padding:5px 7px;text-align:center;border-bottom:1px solid #f3f4f6;color:#111827;}.tbl-exp tr:nth-child(even) td{background:#f9fafb;}.serie-num-exp{font-weight:900;color:#a07830;font-size:13px;font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:1px;}.ex-note-exp{background:#5a5a5a;border-radius:5px;padding:5px 10px;font-size:11px;color:#ffffff;margin-top:6px;font-weight:700;}.block-note-exp{font-size:11px;color:#6b7280;font-style:italic;margin-top:8px;border-top:1px solid #f3f4f6;padding-top:6px;}.video-link-exp{display:inline-flex;align-items:center;gap:3px;margin-left:8px;padding:3px 9px;background:#fee2e2;border:1px solid #fca5a5;border-radius:5px;color:#dc2626;font-size:11px;font-weight:700;text-decoration:none;}.fields-exp{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:8px;}.field-exp{background:#f9fafb;border:1px solid #e5e7eb;border-radius:7px;padding:8px 10px;}.field-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:3px;}.field-val{font-size:15px;font-weight:900;color:#111827;}.run-detail{font-size:12px;color:#374151;margin:6px 0;}.descarga-exp{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:1.25rem;margin-top:1.5rem;}.descarga-exp h3{font-size:13px;font-weight:800;color:#166534;margin-bottom:8px;}.footer-exp{margin-top:2rem;font-size:11px;color:#94a3b8;text-align:center;border-top:1px solid #e2e8f0;padding-top:1rem;}@media print{body{padding:1rem;background:#fff;}.block{box-shadow:none;}}`;
+  return'<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escH(se.titulo||'Sesión')+'</title><style>'+CSS+'</style></head><body>'+
+  '<header><div class="exp-logo">Christian Cattaneo Trainer</div><div class="exp-mode-badge '+(isRun?'run':'fuerza')+'">'+(isRun?'🏃 Running':'🏋️ Fuerza')+'</div><div class="exp-title">'+escH(se.titulo||'Sesión')+'</div><div class="exp-meta">'+escH(stu?.nombre||'—')+' &nbsp;·&nbsp; '+(se.fecha||'—')+(stu?.nivel?' &nbsp;·&nbsp; '+escH(stu.nivel):'')+' </div></header>'+
   blocks_html+
-  (se.descarga?'<div class="descarga"><h3>🔽 Descarga / Vuelta a la calma</h3><p style="font-size:13px;color:#166534;">'+escH(se.descarga)+'</p></div>':'')+
-  '<div class="footer">Christian Cattaneo Trainer &mdash; '+new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'})+'</div></body></html>';
+  (se.descarga?'<div class="descarga-exp"><h3>🔽 Descarga / Vuelta a la calma</h3><p style="font-size:13px;color:#166534;">'+escH(se.descarga)+'</p></div>':'')+
+  '<div class="footer-exp">Christian Cattaneo Trainer &mdash; '+new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'})+'</div></body></html>';
 }
 function dlHTML(html,fn){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download=fn;a.click();}
 function exportHTMLsesion(id){const se=sessions.find(s=>s.id===id);if(se)dlHTML(buildHTML(se),(se.titulo||'sesion')+'.html');}
